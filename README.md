@@ -16,8 +16,13 @@ $ pip install linepy
 The BOT only can run on Python 3.
 
 ## Execution
+
 ```
 $ python main.py
+```
+on some drives you only can use:
+```
+$ cd LH_Selfbot/libs && python main.py
 ```
 
 ## License
