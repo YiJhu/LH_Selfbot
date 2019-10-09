@@ -5,7 +5,7 @@ LH SELF-BOT V1.0 2019/07/27
             V1.2 2019/08/15
 '''
 from linepy import *
-import time, os, sys, json, codecs, threading
+import time, json, codecs, threading
 from time import strftime
 
 mail = ''
@@ -180,7 +180,7 @@ def SEND_MESSAGE(op):
                                     pass
                             else:
                                 print("\'K-lock\' is not on <true>")
-                                BOT.sendMessage(receiver, "Sorry, this function is lock now.")
+                                BOT.sendMessage(receiver, "Sorry, this function is \"lock\" now.")
 #---------------------KiCK_ONLY---------------------#
 
 #---------------------File_ONLY---------------------#
@@ -285,12 +285,32 @@ def SEND_MESSAGE(op):
                                     pass
                         except:
                             pass
+                    if "#ALM:" in text:
+                        str1 = text[5:]
+                        try:
+                            if str1.lower() == "on":
+                                try:
+                                    settings['A-LEAVE_MSG'] = True
+                                    backupData()
+                                    BOT.sendMessage(receiver, "Auto Group Leave MSG On.")
+                                except:
+                                    pass
+                            elif str1.lower() == "off":
+                                try:
+                                    settings['A-LEAVE_MSG'] = False
+                                    backupData()
+                                    BOT.sendMessage(receiver, "Auto Group Leave MSG Off.")
+                                except:
+                                    pass
+                        except:
+                            pass
                     if "#Rename:" in text:
                         str1 = text[8:]
                         profile = BOT.getProfile()
                         profile.displayName = str1
                         BOT.updateProfile(profile)
                         BOT.sendMessage(receiver, "[Successfully Changed Name]\n->" + str1 + "\n" + strftime('%H:%M:%S'))
+                        BOT.log("Rename: %s" % (str1))
                             
 #---------------------Switch_ONLY---------------------#
 
@@ -330,11 +350,13 @@ def NOTIFIED_INVITE_INTO_GROUP(op):
         if settings['A-JOIN'] == True:
             try:
                 BOT.acceptGroupInvitation(op.param1)
+                BOT.log("Join Group")
             except:
                 pass
         if settings['A-REJECTG'] == True:
             try:
                 BOT.rejectGroupInvitation(op.param1)
+                BOT.log("Reject Group")
             except:
                 pass
     except Exception as e:
@@ -345,6 +367,7 @@ def NOTIFIED_ACCEPT_GROUP_INVITATION(op):
         if settings['A-JOIN_MSG'] == True:
             try:
                 BOT.sendMessage(op.param1, "Welcome\t" + BOT.getContact(op.param2).displayName + "\tto join us.")
+                BOT.log("Send Join Msg.")
             except:
                 pass
     except Exception as e:
@@ -352,7 +375,12 @@ def NOTIFIED_ACCEPT_GROUP_INVITATION(op):
 
 def NOTIFIED_LEAVE_GROUP(op):
     try:
-        pass
+        if settings['A-LEAVE_MSG'] == True:
+            try:
+                BOT.sendMessage(op.param1, BOT.getContact(op.param2).displayName + "See you anain~~")
+                BOT.log("Send Leave Msg.")
+            except:
+                pass
     except Exception as e:
         BOT.log("[NOTIFIED_LEAVE_GROUP] ERROR : " + str(e))
 

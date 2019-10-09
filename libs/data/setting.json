@@ -4,5 +4,6 @@
     "A-JOIN_MSG": false,
     "A-LeaveR": false,
     "A-REJECTG": false,
+	"A-LEAVE_MSG": false,
     "K-lock": false
 }
