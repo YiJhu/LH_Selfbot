@@ -5,20 +5,14 @@ LH SELF-BOT V1.0 2019/07/27
             V1.2 2019/08/15
 '''
 from linepy import *
-import time, json, codecs, threading
+import time, json, codecs
 from time import strftime
 
-mail = ''
-passwd = ''
 token = ''
 
 try:
-    try:
-        BOT = LINE(idOrAuthToken=mail, passwd=passwd, appName='IOSIPAD\t9.12.0\tLH Super Core\t11.2.5', systemName='LH Super Core')
-        print('Email Login Success!')
-    except:
-        BOT = LINE(idOrAuthToken=token, appName='IOSIPAD\t9.12.0\tLH Super Core\t11.2.5', systemName='LH Super Core')
-        print('Token or QR Login Success!')
+    BOT = LINE(token)
+    print('Token or QR Login Success!')
 except:
     print("Login Failed!")
 
