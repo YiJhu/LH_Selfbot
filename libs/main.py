@@ -55,7 +55,7 @@ def SEND_MESSAGE(op):
                     if text == "#tag me":
                         BOT.sendMessageWithMention(receiver, '',[sender])
                     if text == "#time":
-                        now = time.strftime('%Y-%m-%d %I:%M:%S')
+                        now = time.strftime('%Y-%m-%d %H:%M:%S')
                         BOT.sendMessage(receiver, "Now Time: %s"  % (now))
                 if msg.toType == 2:
                     if text == "#help":
@@ -105,14 +105,14 @@ def SEND_MESSAGE(op):
                         if G.creator == None: md += "\n[Group Creator]\n" + G.members[0].displayName + " (Inherit)"
                         else: md += "\n[Group Creator]\n" + G.creator.displayName
                         md += "\n[Group Profile]\nhttps://profile.line-scdn.net/%s" % G.pictureStatus
-                        md += "\n[Created Time]\n"+ time.strftime('%Y-%m-%d %I:%M:%S %p', time.localtime(G.createdTime/1000))
+                        md += "\n[Created Time]\n"+ time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(G.createdTime/1000))
                         if G.invitee is None: md += "\n----------------------------------------\nMembers： " + str(len(G.members)) + "\nInvitation： 0"
                         else: md += "\n----------------------------------------\nMembers： " + str(len(G.members)) + "\nInvitation： " + str(len(G.invitee))
                         if G.preventedJoinByTicket is False: md += "\nInvitation Url： Allowed."
                         else: md += "\nInvitation Url： Blocked."
                         BOT.sendMessage(receiver, md)
                     if text == "#time":
-                        now = time.strftime('%Y-%m-%d %I:%M:%S')
+                        now = time.strftime('%Y-%m-%d %H:%M:%S')
                         BOT.sendMessage(receiver, "Now Time： %s"  % (now))
                     if text == "#in:":
                         mid = text[4:37]
