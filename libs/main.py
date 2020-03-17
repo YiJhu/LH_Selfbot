@@ -3,10 +3,10 @@
 LH SELF-BOT V1.0 2019/07/27
             V1.1 2019/08/02
             V1.2 2019/08/15
+            V1.3 2020/03/17
 '''
 from linepy import *
 import time, json, codecs
-from time import strftime
 
 token = ''
 
@@ -55,12 +55,12 @@ def SEND_MESSAGE(op):
                     if text == "#tag me":
                         BOT.sendMessageWithMention(receiver, '',[sender])
                     if text == "#time":
-                        now = strftime('%Y-%m-%d %I:%M:%S')
+                        now = time.strftime('%Y-%m-%d %I:%M:%S')
                         BOT.sendMessage(receiver, "Now Time: %s"  % (now))
                 if msg.toType == 2:
                     if text == "#help":
                         BOT.sendMessage(receiver,
-                                        "【LH SELF BOT HELP COMMAND】\n[#speed]\n[#me]\n[#profile]\n[#mid]\n[#mid:Tag]\n[#gid]\n[#getcontact:Mid]\n[#gowner]\n[#ginfo]\n[#time]\n[#In:Tags]\n[#in:Mid]\n[#tag me]\n[#Tag:Mid]\n[#kick:Mid]\n[#Mk:Tags]\n[#Nk:Name]\n[#Kickall]\n[#time]\n[#Set]")
+                                        "【LH SELF BOT HELP COMMAND】\n[#speed]\n[#me]\n[#profile]\n[#mid]\n[#mid:(Tag)]\n[#gid]\n[#getcontact:(Mid)]\n[#gowner]\n[#ginfo]\n[#time]\n[#In:(Tags)]\n[#in:(Mid)]\n[#tag me]\n[#Tag:(Mid)]\n[#tagall]\n[#kick:(Mid)]\n[#Mk:(Tags)]\n[#Nk:(Name)]\n[#Kickall]\n[#time]\n[#Set]\n[#status]")
                     if text =="#speed":
                         TimeS = time.time()
                         BOT.sendMessage(receiver, "...")
@@ -112,7 +112,7 @@ def SEND_MESSAGE(op):
                         else: md += "\nInvitation Url： Blocked."
                         BOT.sendMessage(receiver, md)
                     if text == "#time":
-                        now = strftime('%Y-%m-%d %I:%M:%S')
+                        now = time.strftime('%Y-%m-%d %I:%M:%S')
                         BOT.sendMessage(receiver, "Now Time： %s"  % (now))
                     if text == "#in:":
                         mid = text[4:37]
@@ -130,6 +130,11 @@ def SEND_MESSAGE(op):
                     if "#Tag:" in text:
                         mid = text[-33:] 
                         BOT.sendMessageWithMention(receiver, '', [mid])
+                    if text == "#tagall":
+                        X = BOT.getGroup(receiver)
+                        name = [contact.mid for contact in X.members]
+                        for i in range(0, len(name), 20):
+                            BOT.sendMessageWithMention(receiver, "\b", name[i:i+20])
 #---------------------KiCK_ONLY---------------------#
                     if "#kick:" in text:
                         if msg.toType == 2:
@@ -183,7 +188,18 @@ def SEND_MESSAGE(op):
 
 #---------------------Switch_ONLY---------------------#
                     if text == "#Set":
-                        BOT.sendMessage(receiver, "【LH SELF BOT SET COMMAND】\n[#ALR:ON/OFF]\n[#AFM:ON/OFF]\n[#AJG:ON/OFF]\n[#ARG:ON/OFF]\n[#AGM:ON/OFF]\n[#Rename:]")
+                        BOT.sendMessage(receiver, "【LH SELF BOT SET COMMAND】\n[#ALR:ON/OFF]\n[#AFM:ON/OFF]\n[#AJG:ON/OFF]\n[#ARG:ON/OFF]\n[#AGM:ON/OFF]\n[#ARM:ON/OFF]\n[#Rename:]")
+                    if text == "#status":
+                        txt = {True:'On', False:'Off'}
+                        md = "【LH SELF BOT STATUS】"
+                        md += "\nAuto Join Group: " + txt[settings["A-JOIN"]]
+                        md += "\nAuto Reject Group: " + txt[settings["A-REJECTG"]]
+                        md += "\nAuto Group Join MSG.: " + txt[settings["A-JOIN_MSG"]]
+                        md += "\nAuto Group Leave MSG.: " + txt[settings["A-LEAVE_MSG"]]
+                        md += "\nAuto Leave Room: " + txt[settings["A-LeaveR"]]
+                        md += "\nAuto Add MSG.: " + txt[settings["A-JOIN_MSG"]]
+                        md += "\nAuto Read: " + txt[settings["A-Read"]]
+                        BOT.sendMessage(receiver, str(md.strip()))
                     if "#ALR:" in text:
                         str1 = text[5:]
                         try:
@@ -298,12 +314,31 @@ def SEND_MESSAGE(op):
                                     pass
                         except:
                             pass
+                    if "#ARM:" in text:
+                        str1 = text[5:]
+                        try:
+                            if str1.lower() == "on":
+                                try:
+                                    settings['A-Read'] = True
+                                    backupData()
+                                    BOT.sendMessage(receiver, "Auto Read On.")
+                                except:
+                                    pass
+                            elif str1.lower() == "off":
+                                try:
+                                    settings['A-Read'] = False
+                                    backupData()
+                                    BOT.sendMessage(receiver, "Auto Read Off.")
+                                except:
+                                    pass
+                        except:
+                            pass
                     if "#Rename:" in text:
                         str1 = text[8:]
                         profile = BOT.getProfile()
                         profile.displayName = str1
                         BOT.updateProfile(profile)
-                        BOT.sendMessage(receiver, "[Successfully Changed Name]\n->" + str1 + "\n" + strftime('%H:%M:%S'))
+                        BOT.sendMessage(receiver, "[Successfully Changed Name]\n->" + str1 + "\n" + time.strftime('%H:%M:%S'))
                         BOT.log("Rename: %s" % (str1))
                             
 #---------------------Switch_ONLY---------------------#
@@ -316,6 +351,41 @@ def SEND_MESSAGE(op):
                 pass
     except Exception as e:
         BOT.log("[SEND_MESSAGE] ERROR : " + str(e))
+
+def RECEIVE_MESSAGE(op):
+    msg = op.message
+    text = msg.text
+    msg_id = msg.id
+    receiver = msg.to
+    sender = msg._from
+    try:
+        if msg.contentType == 0:
+            try:
+                if msg.toType == 0:
+                    if settings["A-Read"] == True:
+                        BOT.sendChatChecked(sender, msg_id)
+#                    print("\n")
+#                    print("Private Chat Message Received")
+#                    print("Sender's Name : " + BOT.getContact(sender).displayName)
+#                    print("Sender's MID : " + sender)
+#                    print("Received Message : " + text)
+#                    print("\n")
+                if msg.toType == 2:
+                    if settings["A-Read"] == True:
+                        BOT.sendChatChecked(receiver, msg_id)
+#                    G = BOT.getGroup(receiver)
+#                    print("\n")
+#                    print("Group Chat Message Received")
+#                    print("Group Name : " + G.name)
+#                    print("Group id : " + G.id)
+#                    print("Sender's Name : " + BOT.getContact(sender).displayName)
+#                    print("Sender's MID : " + sender)
+#                    print("Received Message : " + text)
+#                    print("\n")
+            except:
+                pass
+    except Exception as e:
+        BOT.log("[RECEIVE_MESSAGE] ERROR : " + str(e))
 
 def NOTIFIED_INVITE_INTO_ROOM(op):
     try:
@@ -408,6 +478,7 @@ def NOTIFIED_ADD_CONTACT(op):
 
 oepoll.addOpInterruptWithDict({
     OpType.SEND_MESSAGE: SEND_MESSAGE,
+    OpType.RECEIVE_MESSAGE: RECEIVE_MESSAGE,
     OpType.NOTIFIED_INVITE_INTO_GROUP: NOTIFIED_INVITE_INTO_GROUP,
     OpType.NOTIFIED_INVITE_INTO_ROOM: NOTIFIED_INVITE_INTO_ROOM,
     OpType.NOTIFIED_ACCEPT_GROUP_INVITATION: NOTIFIED_ACCEPT_GROUP_INVITATION,
