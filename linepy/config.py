@@ -31,7 +31,7 @@ class Config(object):
     APP_TYPE    = ApplicationType._VALUES_TO_NAMES[304]
     APP_VER     = '10.2.1'
     CARRIER     = '51089, 1-0'
-    SYSTEM_NAME = 'LH Ipad'
+    SYSTEM_NAME = 'LH_Demo'
     SYSTEM_VER  = '13.3.1'
     IP_ADDR     = '8.8.8.8'
     EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
